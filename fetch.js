@@ -29,14 +29,51 @@ function findSubsequenceWords(input, wordList) {
   return subsequenceWords;
 }
 
+// Function to store keys in local storage
+function storeKeysLocally(list_of_words) {
+  if (!localStorage.getItem('etymoloKeys')) {
+    localStorage.setItem('etymoloKeys', list_of_words);
+  }
+}
+
+// Function to retrieve and display _KEYS from Firebase
+function showKeys() {
+  var FIREBASE_URL_PREFIX = 'https://etymolofly-default-rtdb.europe-west1.firebasedatabase.app';
+  var firebaseKeysUrl = `${FIREBASE_URL_PREFIX}/_KEYS.json`;
+
+  // Check if keys are already in Local Storage
+  var storedKeys = localStorage.getItem('etymoloKeys');
+
+  if (storedKeys) {
+    document.getElementById('keysResult').value = storedKeys;
+  } else {
+    // Fetch keys from Firebase if not in Local Storage
+    fetch(firebaseKeysUrl)
+      .then(response => response.json())
+      .then(data => {
+        if (typeof data === 'string') {
+          // Store keys in Local Storage
+          document.getElementById('keysResult').value = data;
+          storeKeysLocally(data);
+        } else {
+          document.getElementById('keysResult').value = 'Invalid data received.';
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching _KEYS:', error);
+        document.getElementById('keysResult').value = 'Error fetching _KEYS';
+      });
+  }
+}
+
 // Function to handle the search and display the result
 function showMessage() {
   var inputVal = document.getElementById('searchInput').value.toLowerCase();
   inputVal = inputVal.replace(/[^a-zA-Z]/g, '');
-  list_of_words = 'activists,adware,al,allah,always,arrives,assembled,asylum,attacked,audio,automobiles,bent'
   var FIREBASE_URL_PREFIX = 'https://etymolofly-default-rtdb.europe-west1.firebasedatabase.app'
 
   // Find subsequence words based on the user input
+  list_of_words = localStorage.getItem('etymoloKeys');
   const subsequenceWords = findSubsequenceWords(inputVal, list_of_words.split(','));
 
   // Use the first word from the subsequence words as the word for Firebase URL
@@ -73,23 +110,3 @@ document.getElementById('searchInput').addEventListener('keypress', function(eve
     showMessage();
   }
 });
-
-// Function to retrieve and display _KEYS from Firebase
-function showKeys() {
-  var FIREBASE_URL_PREFIX = 'https://etymolofly-default-rtdb.europe-west1.firebasedatabase.app';
-  var firebaseKeysUrl = `${FIREBASE_URL_PREFIX}/_KEYS.json`;
-
-  fetch(firebaseKeysUrl)
-    .then(response => response.json())
-    .then(data => {
-      if (typeof data === 'string') {
-        document.getElementById('keysResult').value = data;
-      } else {
-        document.getElementById('keysResult').value = 'Invalid data received.';
-      }
-    })
-    .catch(error => {
-      console.error('Error fetching _KEYS:', error);
-      document.getElementById('keysResult').value = 'Error fetching _KEYS';
-    });
-}
