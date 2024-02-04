@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Search App</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      padding-top: 50px;
+      font-family: Georgia, 'Times New Roman', Times, serif; /* Serif font similar to Medium */
+    }
+    #message {
+      margin-top: 20px;
+      white-space: pre-wrap; /* Wrap text */
+      border: 1px solid #ddd; /* Light border */
+      padding: 15px; /* Spacing */
+      font-size: 1.1rem; /* Slightly larger font size */
+      line-height: 1.6; /* Line spacing for readability */
+      background-color: #f8f9fa; /* Light background */
+      border-radius: 5px; /* Rounded corners */
+      max-width: 700px; /* Medium-like content width */
+      margin: 20px auto; /* Centered with margin */
+    }
+  </style>
+</head>
+<body class="container">
+  <div class="row justify-content-center">
+    <div>
+      <input type="text" id="searchInput" class="form-control" placeholder="Type something...">
+      <button onclick="showMessage()" class="btn btn-primary mt-2">Search</button>
+      <pre id="message"></pre>
+    </div>
+  </div>
+
+  <script src="fetch.js"></script>
+</body>
+</html>
