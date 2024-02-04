@@ -74,6 +74,11 @@ function showMessage() {
 
   // Find subsequence words based on the user input
   list_of_words = localStorage.getItem('etymoloKeys');
+  if (localStorage.getItem('etymoloKeys') === null) {
+    document.getElementById('message').innerText = 'First, press "Get Keys" to be able to search the Etymolo database.';
+    return;
+  }
+
   const subsequenceWords = findSubsequenceWords(inputVal, list_of_words.split(','));
 
   // Use the first word from the subsequence words as the word for Firebase URL
