@@ -45,7 +45,28 @@ function showKeys() {
   var storedKeys = localStorage.getItem('etymoloKeys');
 
   if (storedKeys) {
-    document.getElementById('keysResult').value = storedKeys;
+    // Fetch keys from Firebase regardless and compare
+    fetch(firebaseKeysUrl)
+      .then(response => response.json())
+      .then(data => {
+        if (typeof data === 'string') {
+          if (data == storedKeys) {
+            // Keys are the same
+            document.getElementById('keysResult').value = 'The keys are already in Local Storage.';
+          } else {
+            // Keys have been updated
+            document.getElementById('keysResult').value = 'The keys have been updated.';
+            // Store the new keys in Local Storage
+            storeKeysLocally(data);
+          }
+        } else {
+          document.getElementById('keysResult').value = 'Invalid data received.';
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching _KEYS:', error);
+        document.getElementById('keysResult').value = 'Error fetching _KEYS';
+      });
   } else {
     // Fetch keys from Firebase if not in Local Storage
     fetch(firebaseKeysUrl)
@@ -53,7 +74,7 @@ function showKeys() {
       .then(data => {
         if (typeof data === 'string') {
           // Store keys in Local Storage
-          document.getElementById('keysResult').value = data;
+          document.getElementById('keysResult').value = 'The keys have been fetched.';
           storeKeysLocally(data);
         } else {
           document.getElementById('keysResult').value = 'Invalid data received.';
