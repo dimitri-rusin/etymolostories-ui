@@ -1,5 +1,6 @@
 function showMessage() {
   var inputVal = document.getElementById('searchInput').value.toLowerCase();
+  inputVal = inputVal.replace(/[^a-zA-Z]/g, '');
   var FIREBASE_URL_PREFIX = 'https://etymolofly-default-rtdb.europe-west1.firebasedatabase.app'
   var firebaseUrl = `${FIREBASE_URL_PREFIX}/${inputVal}.json`;
   fetch(firebaseUrl)
