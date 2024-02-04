@@ -103,23 +103,24 @@ function showMessage() {
   const subsequenceWords = findSubsequenceWords(inputVal, list_of_words.split(','));
 
   // Use the first word from the subsequence words as the word for Firebase URL
-  var wordForFirebaseUrl = subsequenceWords.length > 0 ? subsequenceWords[0] : '';
+  var wordForFirebaseUrl = null  ? subsequenceWords[0] : '';
+  if (subsequenceWords.length > 0)
+  {
+    wordForFirebaseUrl = subsequenceWords[0];
+  } else {
+    document.getElementById('message').innerText = 'Uups: No similar word has not yet been added to the Etymolo database.';
+    return;
+  }
 
   var firebaseUrl = `${FIREBASE_URL_PREFIX}/${wordForFirebaseUrl}.json`;
 
   fetch(firebaseUrl)
     .then(response => response.json())
     .then(data => {
-      if (data === null || (typeof data === 'object' && Object.keys(data).length === 0)) {
-        // Handle the case where the word does not exist
-        document.getElementById('message').innerText = 'Uups: The word has not yet been added to the Etymolo database.';
-      } else if (typeof data === 'string') {
-        var formattedData = data.replace(/\\n/g, '<br>');
-        document.getElementById('message').innerHTML = formattedData;
+      if (typeof data !== 'string') {
+        document.getElementById('message').innerText = 'Not a string';
       } else {
-        var formattedData = JSON.stringify(data, null, 2)
-          .replace(/\\n/g, '<br>')
-          .replace(/\\"/g, '&quot;');
+        var formattedData = data.replace(/\\n/g, '<br>');
         document.getElementById('message').innerHTML = formattedData;
       }
     })
