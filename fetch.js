@@ -1,21 +1,20 @@
 function showMessage() {
-  var inputVal = document.getElementById('searchInput').value;
-  var firebaseUrl = 'https://etymolofly-default-rtdb.europe-west1.firebasedatabase.app/' + inputVal + '.json';
-
+  var inputVal = document.getElementById('searchInput').value.toLowerCase();
+  var FIREBASE_URL_PREFIX = 'https://etymolofly-default-rtdb.europe-west1.firebasedatabase.app'
+  var firebaseUrl = `${FIREBASE_URL_PREFIX}/${inputVal}.json`;
   fetch(firebaseUrl)
     .then(response => response.json())
     .then(data => {
-      // Check if data is a string and not an object or other type
-      if (typeof data === 'string') {
-        // Replace \n with <br> for proper paragraph formatting
+      if (data === null || (typeof data === 'object' && Object.keys(data).length === 0)) {
+        // Handle the case where the word does not exist
+        document.getElementById('message').innerText = 'Uups: The word has not yet been added to the Etymolo database.';
+      } else if (typeof data === 'string') {
         var formattedData = data.replace(/\\n/g, '<br>');
         document.getElementById('message').innerHTML = formattedData;
       } else {
-        // Handle non-string data (e.g., objects or arrays)
         var formattedData = JSON.stringify(data, null, 2)
           .replace(/\\n/g, '<br>')
           .replace(/\\"/g, '&quot;');
-
         document.getElementById('message').innerHTML = formattedData;
       }
     })
@@ -24,3 +23,11 @@ function showMessage() {
       document.getElementById('message').innerText = 'Error fetching data';
     });
 }
+
+// Event listener for Enter key
+document.getElementById('searchInput').addEventListener('keypress', function(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    showMessage();
+  }
+});
