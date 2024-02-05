@@ -4,40 +4,42 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Etymological Stories</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
-    body {
-      padding-top: 50px;
+    .highlight {
+      font-weight: bold;
+      text-decoration: underline;
+      color: #4a5568; /* Tailwind gray-700 */
     }
-    #message {
-      font-family: 'Open Sans', sans-serif;
-      margin-top: 20px;
-      white-space: pre-wrap; /* Wrap text */
-      border: 1px solid #ddd; /* Light border */
-      padding: 15px; /* Spacing */
-      font-size: 1.1rem; /* Slightly larger font size */
-      line-height: 1.6; /* Line spacing for readability */
-      background-color: #f8f9fa; /* Light background */
-      border-radius: 5px; /* Rounded corners */
-      max-width: 700px; /* Medium-like content width */
-      margin: 20px auto; /* Centered with margin */
+    .story {
+      margin-top: 8px;
+      font-size: 1rem;
+      color: #2d3748; /* Tailwind gray-800 */
+    }
+    .subsequence {
+      font-weight: bold;
+      color: #e53e3e; /* Example color */
     }
   </style>
 </head>
-<body class="container">
-  <div class="row justify-content-center">
-    <div>
-      <input type="text" id="searchInput" class="form-control" placeholder="Type something...">
-      <button onclick="showMessage()" class="btn btn-primary mt-2">Search</button>
-      <pre id="message"></pre>
-    </div>
-    <div>
-      <button onclick="showKeys()" class="btn btn-secondary mt-2 float-right">Get Keys</button>
-      <input type="text" id="keysResult" class="form-control mt-2 float-right" readonly>
+<body class="bg-gray-100">
+  <div class="container mx-auto p-4">
+    <h1 class="text-xl font-bold text-center mb-6">Etymological Stories</h1>
+    <div class="flex flex-col items-center">
+      <div class="mb-4 w-full max-w-md">
+        <input type="text" id="searchInput" class="form-control w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Type something...">
+      </div>
+      <div class="mb-4">
+        <button onclick="showMessage()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Search</button>
+      </div>
+      <div id="searchResults"   class="max-w-lg w-full bg-white p-6 rounded-lg shadow-lg">
+      </div>
+      <div class="mt-4">
+        <button onclick="showKeys()" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Get Keys</button>
+        <input type="text" id="keysResult" class="form-control mt-2 w-full px-3 py-2 border border-gray-300 rounded-md" readonly>
+      </div>
     </div>
   </div>
-
   <script src="fetch.js"></script>
 </body>
 </html>

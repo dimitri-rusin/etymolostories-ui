@@ -88,46 +88,87 @@ function showKeys() {
 }
 
 // Function to handle the search and display the result
-function showMessage() {
+async function showMessage() {
   var inputVal = document.getElementById('searchInput').value.toLowerCase();
   inputVal = inputVal.replace(/[^a-zA-Z]/g, '');
-  var FIREBASE_URL_PREFIX = 'https://etymolofly-default-rtdb.europe-west1.firebasedatabase.app'
+  var FIREBASE_URL_PREFIX = 'https://etymolofly-default-rtdb.europe-west1.firebasedatabase.app';
 
   // Find subsequence words based on the user input
-  list_of_words = localStorage.getItem('etymoloKeys');
-  if (localStorage.getItem('etymoloKeys') === null) {
-    document.getElementById('message').innerText = 'First, press "Get Keys" to be able to search the Etymolo database.';
+  var list_of_words = localStorage.getItem('etymoloKeys');
+  if (list_of_words === null) {
+    updateMessage('First, press "Get Keys" to be able to search the Etymolo database.');
     return;
   }
 
   const subsequenceWords = findSubsequenceWords(inputVal, list_of_words.split(','));
+  console.log(subsequenceWords);
 
-  // Use the first word from the subsequence words as the word for Firebase URL
-  var wordForFirebaseUrl = null  ? subsequenceWords[0] : '';
-  if (subsequenceWords.length > 0)
-  {
-    wordForFirebaseUrl = subsequenceWords[0];
-  } else {
-    document.getElementById('message').innerText = 'Uups: No similar word has not yet been added to the Etymolo database.';
+  if (subsequenceWords.length === 0) {
+    updateMessage('Uups: No similar word has not yet been added to the Etymolo database.');
     return;
   }
 
-  var firebaseUrl = `${FIREBASE_URL_PREFIX}/${wordForFirebaseUrl}.json`;
+  // Clear previous search results
+  document.getElementById('searchResults').innerHTML = '';
 
-  fetch(firebaseUrl)
-    .then(response => response.json())
-    .then(data => {
-      if (typeof data !== 'string') {
-        document.getElementById('message').innerText = 'Not a string';
-      } else {
-        var formattedData = data.replace(/\\n/g, '<br>');
-        document.getElementById('message').innerHTML = formattedData;
-      }
-    })
-    .catch(error => {
-      console.error('Error fetching data:', error);
-      document.getElementById('message').innerText = 'Error fetching data';
-    });
+  // Create an array of promises
+  const fetchPromises = subsequenceWords.map(word => fetchStoryForWord(FIREBASE_URL_PREFIX, word));
+
+  // Wait for all promises to resolve
+  const results = await Promise.all(fetchPromises);
+
+  // Process results in order
+  results.forEach(({ word, story }) => createSearchResultBlock(word, story, inputVal));
+}
+
+// Modified function to fetch story for each word
+async function fetchStoryForWord(FIREBASE_URL_PREFIX, word) {
+  var firebaseUrl = `${FIREBASE_URL_PREFIX}/${word}.json`;
+
+  try {
+    const response = await fetch(firebaseUrl);
+    const data = await response.json();
+    const story = typeof data !== 'string' ? 'Story not available' : data.replace(/\\n/g, '<br>');
+    return { word, story }; // return both word and story
+  } catch (error) {
+    console.error('Error fetching data for word:', word, error);
+    return { word, story: 'Error fetching data' };
+  }
+}
+
+// Function to create the search result block dynamically
+function createSearchResultBlock(word, story, inputVal) {
+  var highlightedWord = highlightSubsequence(word, inputVal);
+  var searchResults = document.getElementById('searchResults');
+  searchResults.innerHTML += `
+    <div class="mb-4">
+      <span class="highlight">${highlightedWord}</span>
+      <p class="story">${story}</p>
+    </div>
+  `;
+}
+
+// Function to highlight the subsequence within a word
+function highlightSubsequence(word, subsequence) {
+  let result = '';
+  let subIndex = 0;
+
+  for (let i = 0; i < word.length; i++) {
+    if (word[i].toLowerCase() === subsequence[subIndex]?.toLowerCase()) {
+      result += `<span class="subsequence">${word[i]}</span>`;
+      subIndex++;
+    } else {
+      result += word[i];
+    }
+  }
+
+  return result;
+}
+
+// Function to update the message in case of an error or notification
+function updateMessage(message) {
+  var searchResults = document.getElementById('searchResults');
+  searchResults.innerHTML = `<p class="story">${message}</p>`;
 }
 
 // Event listener for Enter key
