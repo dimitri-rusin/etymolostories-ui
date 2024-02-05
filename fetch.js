@@ -38,52 +38,30 @@ function storeKeysLocally(list_of_words) {
 
 // Function to retrieve and display _KEYS from Firebase
 function showKeys() {
-  var FIREBASE_URL_PREFIX = 'https://etymolofly-default-rtdb.europe-west1.firebasedatabase.app';
-  var firebaseKeysUrl = `${FIREBASE_URL_PREFIX}/_KEYS.json`;
 
   // Check if keys are already in Local Storage
   var storedKeys = localStorage.getItem('etymoloKeys');
 
-  if (storedKeys) {
-    // Fetch keys from Firebase regardless and compare
-    fetch(firebaseKeysUrl)
-      .then(response => response.json())
-      .then(data => {
-        if (typeof data === 'string') {
-          if (data == storedKeys) {
-            // Keys are the same
-            document.getElementById('keysResult').value = 'The keys are already in Local Storage.';
-          } else {
-            // Keys have been updated
-            document.getElementById('keysResult').value = 'The keys have been updated.';
-            // Store the new keys in Local Storage
-            storeKeysLocally(data);
-          }
-        } else {
-          document.getElementById('keysResult').value = 'Invalid data received.';
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching _KEYS:', error);
-        document.getElementById('keysResult').value = 'Error fetching _KEYS';
-      });
-  } else {
-    // Fetch keys from Firebase if not in Local Storage
+  // Fetch keys from Firebase if not in Local Storage
+  if (!storedKeys) {
+    var FIREBASE_URL_PREFIX = 'https://etymolofly-default-rtdb.europe-west1.firebasedatabase.app';
+    var firebaseKeysUrl = `${FIREBASE_URL_PREFIX}/_KEYS.json`;
     fetch(firebaseKeysUrl)
       .then(response => response.json())
       .then(data => {
         if (typeof data === 'string') {
           // Store keys in Local Storage
-          document.getElementById('keysResult').value = 'The keys have been fetched.';
+          console.log('The _KEYS have been fetched.');
           storeKeysLocally(data);
         } else {
-          document.getElementById('keysResult').value = 'Invalid data received.';
+          console.error('Received invalid _KEYS.');
         }
       })
       .catch(error => {
         console.error('Error fetching _KEYS:', error);
-        document.getElementById('keysResult').value = 'Error fetching _KEYS';
       });
+  } else {
+    console.log('Recycling _KEYS.');
   }
 }
 
@@ -101,7 +79,6 @@ async function showMessage() {
   }
 
   const subsequenceWords = findSubsequenceWords(inputVal, list_of_words.split(','));
-  console.log(subsequenceWords);
 
   if (subsequenceWords.length === 0) {
     updateMessage('Uups: No similar word has not yet been added to the Etymolo database.');
@@ -178,3 +155,7 @@ document.getElementById('searchInput').addEventListener('keypress', function(eve
     showMessage();
   }
 });
+
+
+
+showKeys();
