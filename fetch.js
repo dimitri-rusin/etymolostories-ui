@@ -53,6 +53,7 @@ function showKeys() {
           // Store keys in Local Storage
           console.log('The _KEYS have been fetched.');
           storeKeysLocally(data);
+          updateAvailableWordCount(data.split(',').length);
         } else {
           console.error('Received invalid _KEYS.');
         }
@@ -61,8 +62,14 @@ function showKeys() {
         console.error('Error fetching _KEYS:', error);
       });
   } else {
+    updateAvailableWordCount(storedKeys.split(',').length);
     console.log('Recycling _KEYS.');
   }
+}
+
+// Function to update available word count on the page
+function updateAvailableWordCount(count) {
+  document.getElementById('available').textContent = 'Available words: ' + count;
 }
 
 // Function to handle the search and display the result
