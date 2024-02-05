@@ -129,7 +129,7 @@ function createSearchResultBlock(word, story, inputVal) {
       <span class="highlight">${highlightedWord}</span>
       <p class="story">${story}</p>
     </div>
-  `;
+    <hr class="my-2 h-1 bg-gray-500">`; // Thicker and darker horizontal rule
 }
 
 // Function to highlight the subsequence within a word
